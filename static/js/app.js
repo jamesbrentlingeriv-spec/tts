@@ -214,25 +214,26 @@ async function checkSettingsStatus() {
   const cardKokoro = document.getElementById("engine-card-kokoro");
   const cardGemini = document.getElementById("engine-card-gemini");
 
-  let data;
   try {
-    const res = await fetch("/api/settings");
-    if (!res.ok) throw new Error("API unavailable");
-    data = await res.json();
-  } catch (err) {
-    const local = localStorage.getItem("sprach_settings");
-    data = local ? JSON.parse(local) : {
-      engine: "microsoft_neural",
-      has_gemini_key: !!localStorage.getItem("gemini_api_key"),
-      masked_gemini_key: localStorage.getItem("gemini_api_key") ? "AIzaSy..." : "",
-      has_openrouter_key: !!localStorage.getItem("openrouter_api_key"),
-      masked_openrouter_key: localStorage.getItem("openrouter_api_key") ? "sk-or-..." : "",
-      default_format: "mp3"
-    };
-  }
-  const isKokoro = data.engine === "kokoro";
-  const isGemini = data.engine === "gemini";
-  const isNeural = !isKokoro && !isGemini;
+    let data;
+    try {
+      const res = await fetch("/api/settings");
+      if (!res.ok) throw new Error("API unavailable");
+      data = await res.json();
+    } catch (err) {
+      const local = localStorage.getItem("sprach_settings");
+      data = local ? JSON.parse(local) : {
+        engine: "microsoft_neural",
+        has_gemini_key: !!localStorage.getItem("gemini_api_key"),
+        masked_gemini_key: localStorage.getItem("gemini_api_key") ? "AIzaSy..." : "",
+        has_openrouter_key: !!localStorage.getItem("openrouter_api_key"),
+        masked_openrouter_key: localStorage.getItem("openrouter_api_key") ? "sk-or-..." : "",
+        default_format: "mp3"
+      };
+    }
+    const isKokoro = data.engine === "kokoro";
+    const isGemini = data.engine === "gemini";
+    const isNeural = !isKokoro && !isGemini;
 
     // Set radios and cards
     if (radioNeural && radioKokoro && radioGemini) {
