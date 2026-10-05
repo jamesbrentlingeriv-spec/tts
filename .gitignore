@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# Local data & audio outputs
+data/audio_output/
+*.mp3
+*.m4a
+*.wav
+
+# Secrets & environment
+.env
+.env.*

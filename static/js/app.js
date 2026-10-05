@@ -3,7 +3,7 @@
 // PWA Service Worker Registration
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js")
+    navigator.serviceWorker.register("./sw.js")
       .then((reg) => console.log("SPRACH Service Worker Registered:", reg.scope))
       .catch((err) => console.error("Service Worker Registration Failed:", err));
   });
@@ -214,12 +214,25 @@ async function checkSettingsStatus() {
   const cardKokoro = document.getElementById("engine-card-kokoro");
   const cardGemini = document.getElementById("engine-card-gemini");
 
+  let data;
   try {
     const res = await fetch("/api/settings");
-    const data = await res.json();
-    const isKokoro = data.engine === "kokoro";
-    const isGemini = data.engine === "gemini";
-    const isNeural = !isKokoro && !isGemini;
+    if (!res.ok) throw new Error("API unavailable");
+    data = await res.json();
+  } catch (err) {
+    const local = localStorage.getItem("sprach_settings");
+    data = local ? JSON.parse(local) : {
+      engine: "microsoft_neural",
+      has_gemini_key: !!localStorage.getItem("gemini_api_key"),
+      masked_gemini_key: localStorage.getItem("gemini_api_key") ? "AIzaSy..." : "",
+      has_openrouter_key: !!localStorage.getItem("openrouter_api_key"),
+      masked_openrouter_key: localStorage.getItem("openrouter_api_key") ? "sk-or-..." : "",
+      default_format: "mp3"
+    };
+  }
+  const isKokoro = data.engine === "kokoro";
+  const isGemini = data.engine === "gemini";
+  const isNeural = !isKokoro && !isGemini;
 
     // Set radios and cards
     if (radioNeural && radioKokoro && radioGemini) {
@@ -378,10 +391,16 @@ async function saveEngineDirectly(engineName) {
     if (res.ok) {
       await checkSettingsStatus();
       await loadVoicesEverywhere();
+      return;
     }
   } catch (err) {
-    console.error("Error setting engine:", err);
+    // Static mode / GitHub Pages
   }
+  let cfg = JSON.parse(localStorage.getItem("sprach_settings") || "{}");
+  cfg.engine = engineName;
+  localStorage.setItem("sprach_settings", JSON.stringify(cfg));
+  await checkSettingsStatus();
+  await loadVoicesEverywhere();
 }
 
 // Global Engine & Pill State
@@ -584,13 +603,21 @@ let cachedVoices = [];
 async function loadVoicesEverywhere() {
   try {
     const res = await fetch("/api/voices?engine=all");
+    if (!res.ok) throw new Error("API unavailable");
     cachedVoices = await res.json();
-    populateVoiceSelects(cachedVoices);
-    if (window.renderVoiceCatalog) {
-      window.renderVoiceCatalog(cachedVoices);
-    }
   } catch (err) {
-    console.error("Error loading voices:", err);
+    try {
+      const staticRes = await fetch("./static/voices.json");
+      if (staticRes.ok) {
+        cachedVoices = await staticRes.json();
+      }
+    } catch (e) {
+      console.warn("Could not load static voices:", e);
+    }
+  }
+  populateVoiceSelects(cachedVoices);
+  if (window.renderVoiceCatalog) {
+    window.renderVoiceCatalog(cachedVoices);
   }
 }
 
