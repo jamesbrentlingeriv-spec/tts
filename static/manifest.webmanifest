@@ -1,0 +1,43 @@
+{
+  "name": "SPRACH - AI Text-to-Speech Studio",
+  "short_name": "SPRACH",
+  "description": "High-speed AI Text-to-Speech PWA with Microsoft Neural TTS, Audiobook Studio, and Studio Voices",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#080808",
+  "theme_color": "#080808",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/static/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Quick Speech",
+      "url": "/#quick",
+      "description": "Speak phrases and funny quotes instantly"
+    },
+    {
+      "name": "Audiobook Studio",
+      "url": "/#audiobook",
+      "description": "Generate full audiobooks from text or files"
+    },
+    {
+      "name": "Voice Studio",
+      "url": "/#voices",
+      "description": "Create and customize your AI voices"
+    }
+  ],
+  "categories": ["utilities", "productivity", "entertainment", "books"]
+}

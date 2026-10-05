@@ -1,0 +1,9 @@
+{
+  "engine": "gemini",
+  "gemini_api_key": "",
+  "openrouter_api_key": "",
+  "default_model": "gemini-2.0-flash",
+  "default_voice": "Puck",
+  "default_format": "mp3",
+  "chunk_size": 1000
+}

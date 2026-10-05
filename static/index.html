@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SPRACH - AI Text-to-Speech Studio</title>
+  
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#080808">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SPRACH">
+  <link rel="icon" type="image/png" href="/static/icons/icon.png">
+  <link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/static/css/app.css?v=8">
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="header-top-row">
+        <a href="#" class="brand">
+          <img src="/static/icons/icon.png" alt="SPRACH" class="brand-icon">
+          <div class="brand-text">
+            <h1>SPRACH</h1>
+            <span id="header-engine-subtext">Speech Synthesis</span>
+          </div>
+        </a>
+
+        <!-- Header Actions & PWA Install -->
+        <div class="header-actions">
+          <button id="btn-install-pwa" class="btn-install" title="Install App to your device">
+            ⬇️ Install
+          </button>
+          <div id="status-kokoro-badge" class="status-badge" title="Microsoft Neural Engine Status">
+            <span class="dot"></span> <span id="status-text">Neural Ready (Free)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav-tabs" role="tablist">
+        <button class="nav-btn active" data-tab="tab-quick" role="tab">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Quick</span>
+        </button>
+        <button class="nav-btn" data-tab="tab-audiobook" role="tab">
+          <span class="nav-icon">📚</span>
+          <span class="nav-label">Books</span>
+        </button>
+        <button class="nav-btn" data-tab="tab-voices" role="tab">
+          <span class="nav-icon">🎨</span>
+          <span class="nav-label">Voices</span>
+        </button>
+        <button class="nav-btn" data-tab="tab-library" role="tab">
+          <span class="nav-icon">🎧</span>
+          <span class="nav-label">Library</span>
+        </button>
+        <button class="nav-btn" data-tab="tab-settings" role="tab">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="app-main">
+
+    <!-- 1. Quick Speech Tab -->
+    <section id="tab-quick" class="tab-pane active">
+      <div class="card" style="max-width: 760px; margin: 0 auto;">
+        <div class="card-title">
+          <span>⚡ Instant Speech Generator</span>
+        </div>
+        <p id="quick-card-subtitle" class="card-subtitle">Lightning-fast speech synthesis with studio-grade voices.</p>
+
+        <!-- Quick / Funny Presets -->
+        <div class="preset-chips">
+          <button class="chip-btn" data-preset="joke">🎭 Joke</button>
+          <button class="chip-btn" data-preset="trailer">🎬 Trailer</button>
+          <button class="chip-btn" data-preset="pirate">🏴‍☠️ Pirate</button>
+          <button class="chip-btn" data-preset="sarcastic">☕ Sarcastic</button>
+          <button class="chip-btn" data-preset="radio">📻 1940s Radio</button>
+          <button class="chip-btn" data-preset="scifi">🌌 Cyberpunk</button>
+          <button class="chip-btn" data-preset="wizard">🧙 Lore Master</button>
+        </div>
+
+        <!-- Text Area -->
+        <div class="form-group" style="margin-bottom: 0.85rem;">
+          <div class="form-label">
+            <span>Text to Speak</span>
+            <span id="char-count" style="font-size: 0.75rem; color: var(--text-muted);">0 chars</span>
+          </div>
+          <textarea id="quick-text" class="form-textarea" placeholder="Type or paste what you want to hear... e.g. 'I am not saying I hate mornings, but coffee and I have an exclusive trauma-bonding relationship.'" rows="3"></textarea>
+        </div>
+
+        <!-- Controls: Voice & Format in one row -->
+        <div class="quick-options-grid">
+          <div class="form-group" style="margin: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; flex-wrap: wrap; gap: 0.35rem;">
+              <label class="form-label" id="quick-voice-label" style="margin: 0;">Voice Selection</label>
+              <div class="engine-pill-group" id="quick-engine-pills" style="display: flex; gap: 0.25rem; flex-wrap: wrap;">
+                <button type="button" class="chip-btn" data-engine-select="gemini" style="padding: 2px 7px; font-size: 0.72rem;">✨ Gemini</button>
+                <button type="button" class="chip-btn" data-engine-select="kokoro" style="padding: 2px 7px; font-size: 0.72rem;">🍃 Kokoro</button>
+                <button type="button" class="chip-btn" data-engine-select="neural" style="padding: 2px 7px; font-size: 0.72rem;">🎙️ Microsoft</button>
+                <button type="button" class="chip-btn active" data-engine-select="all" style="padding: 2px 7px; font-size: 0.72rem;">✨ All</button>
+              </div>
+            </div>
+            <select id="quick-voice-select" class="form-select"></select>
+          </div>
+          <div class="form-group" style="margin: 0;">
+            <label class="form-label">Format</label>
+            <select id="quick-format" class="form-select format-select">
+              <option value="mp3" selected>MP3 (192 kbps)</option>
+              <option value="m4a">M4A (AAC)</option>
+              <option value="wav">WAV (Lossless)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Voice Info Summary -->
+        <div id="quick-voice-info" style="font-size: 0.75rem; color: var(--text-muted); margin: 0.5rem 0 0.85rem; padding: 0.4rem 0.6rem; background: var(--bg-elevated); border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+          <span id="quick-voice-name" style="color: var(--accent-cyan); font-weight: 600;">Heart (Flagship)</span>: <span id="quick-voice-desc">Top-rated Grade A flagship voice. Warm, natural, and expressive.</span>
+        </div>
+
+        <!-- Action Button -->
+        <button id="btn-quick-generate" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-size: 0.95rem; font-weight: 700;">
+          ✨ Speak Now
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. Audiobook Studio Tab -->
+    <section id="tab-audiobook" class="tab-pane">
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <div class="card-title">
+          <span>📚 Full Audiobook Studio</span>
+        </div>
+        <p class="card-subtitle">Convert entire novels, chapters, or articles into polished audiobooks with smart chunking and seamless MP3/M4A stitching.</p>
+
+        <form id="form-audiobook-setup">
+          <div class="audiobook-setup-grid">
+            <div class="form-group">
+              <label class="form-label">Audiobook / Project Title</label>
+              <input type="text" id="ab-title" class="form-input" placeholder="e.g. The Time Machine - Chapter 1" required>
+            </div>
+
+            <div class="form-group">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; flex-wrap: wrap; gap: 0.35rem;">
+                <label class="form-label" style="margin: 0;">Narrator Voice</label>
+                <div class="engine-pill-group" id="ab-engine-pills" style="display: flex; gap: 0.25rem; flex-wrap: wrap;">
+                  <button type="button" class="chip-btn" data-engine-select="gemini" style="padding: 2px 7px; font-size: 0.72rem;">✨ Gemini</button>
+                  <button type="button" class="chip-btn" data-engine-select="kokoro" style="padding: 2px 7px; font-size: 0.72rem;">🍃 Kokoro</button>
+                  <button type="button" class="chip-btn" data-engine-select="neural" style="padding: 2px 7px; font-size: 0.72rem;">🎙️ Microsoft</button>
+                  <button type="button" class="chip-btn active" data-engine-select="all" style="padding: 2px 7px; font-size: 0.72rem;">✨ All</button>
+                </div>
+              </div>
+              <select id="ab-voice-select" class="form-select"></select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Chunk Size (chars)</label>
+              <select id="ab-chunk-size" class="form-select">
+                <option value="500">500 chars (~80 words - Ultra-fine)</option>
+                <option value="1000" selected>1,000 chars (~160 words - Balanced)</option>
+                <option value="1500">1,500 chars (~250 words - Large chunks)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- File Upload Zone -->
+          <div class="drop-zone" id="ab-drop-zone">
+            <div class="drop-icon">📄</div>
+            <p><strong>Drag & drop your file here, or click to browse</strong></p>
+            <p class="file-types">Supports .txt, .md, .pdf, and .epub files</p>
+            <input type="file" id="ab-file-input" accept=".txt,.md,.pdf,.epub" style="display: none;">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('ab-file-input').click()">
+              Choose File
+            </button>
+          </div>
+
+          <!-- Paste Raw Text Option -->
+          <details style="margin: 0.75rem 0;">
+            <summary style="font-size: 0.8rem; color: var(--accent-cyan); cursor: pointer;">
+              ▶ Or paste raw text directly...
+            </summary>
+            <textarea id="ab-raw-text" class="form-textarea" placeholder="Paste full article or book text here..." rows="6" style="margin-top: 0.5rem;"></textarea>
+          </details>
+
+          <div class="ab-parse-row">
+            <button type="button" id="btn-ab-parse" class="btn btn-primary btn-ab-parse">
+              🔍 Analyze & Prepare Chunks
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Audiobook Generation Workspace -->
+      <div id="ab-workspace" class="card" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <h3 id="ab-project-title" style="font-size: 1.15rem; font-weight: 600;">Project Chunks</h3>
+            <div class="metrics-bar">
+              <div class="metric-box">
+                <div class="metric-value" id="ab-total-words">0</div>
+                <div class="metric-label">Words</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-value" id="ab-total-chunks">0</div>
+                <div class="metric-label">Chunks</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-value" id="ab-est-duration">0 min</div>
+                <div class="metric-label">Est. Duration</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-value" id="ab-chapters-count">0</div>
+                <div class="metric-label">Chapters</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Batch Controls -->
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button id="btn-ab-start-batch" class="btn btn-success">
+              ▶️ Generate All
+            </button>
+            <button id="btn-ab-pause-batch" class="btn btn-secondary" style="display: none;">
+              ⏸️ Pause
+            </button>
+            <button id="btn-ab-cancel-batch" class="btn btn-secondary" style="display: none;">
+              ⏹️ Stop
+            </button>
+            <button id="btn-ab-stitch" class="btn btn-primary" style="display: none;">
+              📦 Stitch Master (MP3 & M4A)
+            </button>
+          </div>
+        </div>
+
+        <!-- Overall Progress Bar -->
+        <div class="progress-bar-container" style="margin-bottom: 1.25rem;">
+          <div class="progress-bar-track">
+            <div id="ab-progress-fill" class="progress-bar-fill" style="width: 0%;"></div>
+          </div>
+          <div class="progress-bar-text">
+            <span id="ab-progress-text">Ready to generate</span>
+            <span id="ab-progress-percent">0%</span>
+          </div>
+        </div>
+
+        <!-- Chunks Accordion List -->
+        <div id="ab-chunks-container" class="chunks-list">
+          <!-- Filled dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Voice Studio Tab -->
+    <section id="tab-voices" class="tab-pane">
+      <div class="voices-layout">
+        
+        <!-- Left: Voice Catalog -->
+        <div>
+          <div class="card">
+            <div class="card-title">
+              <span id="catalog-title">🎨 Voice Catalog</span>
+            </div>
+            <p id="catalog-subtitle" class="card-subtitle">Studio-quality voices for your speech and audiobooks.</p>
+
+            <!-- Engine Filter Tabs -->
+            <div class="engine-filter-bar" id="voice-engine-filter-bar" style="display: flex; gap: 0.5rem; margin-bottom: 0.85rem; padding-bottom: 0.85rem; border-bottom: 1px solid var(--border-color); flex-wrap: wrap;">
+              <button type="button" class="engine-tab-btn active" data-engine-filter="all" style="flex: 1; min-width: 90px;">
+                ✨ All Voices (89)
+              </button>
+              <button type="button" class="engine-tab-btn" data-engine-filter="gemini" style="flex: 1; min-width: 105px;">
+                ✨ Gemini (5)
+              </button>
+              <button type="button" class="engine-tab-btn" data-engine-filter="kokoro" style="flex: 1; min-width: 105px;">
+                🍃 Kokoro (49)
+              </button>
+              <button type="button" class="engine-tab-btn" data-engine-filter="neural" style="flex: 1; min-width: 105px;">
+                🎙️ Microsoft (35)
+              </button>
+            </div>
+
+            <!-- Language & Accent Filters -->
+            <div class="preset-chips" id="voice-filter-chips">
+              <button class="chip-btn active" data-filter="all">All</button>
+              <button class="chip-btn" data-filter="en-us">🇺🇸 US English</button>
+              <button class="chip-btn" data-filter="en-gb">🇬🇧 British</button>
+              <button class="chip-btn" data-filter="other">🌍 AU / CA / IN</button>
+              <button class="chip-btn" data-filter="intl">🌐 International</button>
+              <button class="chip-btn" data-filter="custom">⭐ Favorites</button>
+            </div>
+
+            <!-- Voice Grid -->
+            <div class="voice-selector-grid" id="voice-catalog-grid">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Favorite / Custom Preset Creator -->
+        <div class="card">
+          <div class="card-title">
+            <span>⭐ Save Favorite / Custom Preset</span>
+          </div>
+          <p class="card-subtitle">Bookmark and label your favorite Kokoro voices with custom notes, default pacing, and tags.</p>
+
+          <form id="form-create-voice">
+            <div class="form-group">
+              <label class="form-label">Voice Bookmark Label</label>
+              <input type="text" id="cv-name" class="form-input" placeholder="e.g. My Sci-Fi Narrator" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Base Kokoro Voice</label>
+              <select id="cv-base-voice" class="form-select" required></select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Description / Project Notes</label>
+              <textarea id="cv-prompt" class="form-textarea" placeholder="e.g. 'Use this voice for deep sci-fi novels and slow chapter readings.'" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Tags (comma-separated)</label>
+              <input type="text" id="cv-tags" class="form-input" placeholder="e.g. Audiobooks, Thriller, Favorite">
+            </div>
+
+            <!-- Test Voice Sandbox -->
+            <div style="background: var(--bg-elevated); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); margin-bottom: 1rem;">
+              <div style="font-size: 0.8rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--accent-cyan);">
+                🔊 Test Voice Sample
+              </div>
+              <input type="text" id="cv-sample-text" class="form-input" style="font-size: 0.82rem; margin-bottom: 0.5rem;" value="Hello! This is a live audition of the Kokoro speech engine via OpenRouter.">
+              <button type="button" id="btn-test-custom-voice" class="btn btn-secondary btn-sm" style="width: 100%;">
+                Preview Voice
+              </button>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+              💾 Save to Favorites
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Audio Library Tab -->
+    <section id="tab-library" class="tab-pane">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div class="card-title">
+              <span>🎧 Generated Audio Library</span>
+            </div>
+            <p class="card-subtitle" style="margin: 0;">Access and re-download your audio clips and audiobooks.</p>
+          </div>
+
+          <div style="display: flex; gap: 0.5rem;">
+            <button id="btn-refresh-history" class="btn btn-secondary btn-sm">🔄 Refresh</button>
+          </div>
+        </div>
+
+        <div id="history-grid" class="history-grid">
+          <!-- Filled dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Settings Tab -->
+    <section id="tab-settings" class="tab-pane">
+      <div style="max-width: 700px; margin: 0 auto;">
+        <div class="card">
+          <div class="card-title">
+            <span>⚙️ Engine Settings & Voice Provider</span>
+          </div>
+          <p class="card-subtitle">Choose between Microsoft Neural TTS (Free, sub-second, no API key), Kokoro 82M (OpenRouter API), or Google Gemini (Gemini 2.0 Flash Audio with expressive styling).</p>
+
+          <form id="form-settings">
+            <!-- Engine Selection Radio Cards -->
+            <div class="form-group" style="margin-bottom: 1.25rem;">
+              <label class="form-label" style="font-weight: 600; margin-bottom: 0.5rem; display: block;">Active Voice Engine</label>
+              
+              <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+                <label id="engine-card-neural" class="engine-select-card active" style="display: flex; flex-direction: column; padding: 0.85rem; border-radius: var(--radius-sm); border: 2px solid var(--accent-red); background: var(--bg-elevated); cursor: pointer; transition: all 0.2s;">
+                  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+                    <div style="display: flex; align-items: center; gap: 0.4rem;">
+                      <input type="radio" name="tts_engine" value="microsoft_neural" id="radio-engine-neural" checked style="accent-color: var(--accent-red);">
+                      <strong style="font-size: 0.88rem;">Microsoft</strong>
+                    </div>
+                    <span style="font-size: 0.7rem; background: rgba(16, 185, 129, 0.2); color: var(--success); padding: 2px 6px; border-radius: 4px; font-weight: 600;">FREE</span>
+                  </div>
+                  <span style="font-size: 0.75rem; color: var(--text-secondary); line-height: 1.3;">
+                    Fast (~0.8s), studio broadcast quality, zero API key needed.
+                  </span>
+                </label>
+
+                <label id="engine-card-kokoro" class="engine-select-card" style="display: flex; flex-direction: column; padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-elevated); cursor: pointer; transition: all 0.2s;">
+                  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+                    <div style="display: flex; align-items: center; gap: 0.4rem;">
+                      <input type="radio" name="tts_engine" value="kokoro" id="radio-engine-kokoro" style="accent-color: var(--accent-red);">
+                      <strong style="font-size: 0.88rem;">Kokoro 82M</strong>
+                    </div>
+                    <span style="font-size: 0.7rem; background: rgba(239, 68, 68, 0.2); color: #f87171; padding: 2px 6px; border-radius: 4px; font-weight: 600;">OpenRouter</span>
+                  </div>
+                  <span style="font-size: 0.75rem; color: var(--text-secondary); line-height: 1.3;">
+                    54 expressive voices across 8 languages. Previews cached to disk.
+                  </span>
+                </label>
+
+                <label id="engine-card-gemini" class="engine-select-card" style="display: flex; flex-direction: column; padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-elevated); cursor: pointer; transition: all 0.2s;">
+                  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+                    <div style="display: flex; align-items: center; gap: 0.4rem;">
+                      <input type="radio" name="tts_engine" value="gemini" id="radio-engine-gemini" style="accent-color: var(--accent-red);">
+                      <strong style="font-size: 0.88rem;">Google Gemini</strong>
+                    </div>
+                    <span style="font-size: 0.7rem; background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 2px 6px; border-radius: 4px; font-weight: 600;">AI STUDIO</span>
+                  </div>
+                  <span style="font-size: 0.75rem; color: var(--text-secondary); line-height: 1.3;">
+                    Gemini 2.0 Flash Audio with Puck, Charon, Kore, Fenrir, and Aoede.
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <!-- OpenRouter API Key Field (Shown when Kokoro is chosen) -->
+            <div id="kokoro-api-box" class="form-group" style="display: none; background: rgba(255,255,255,0.02); padding: 1rem; border-radius: var(--radius-sm); border: 1px dashed var(--border-color); margin-bottom: 1.25rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                <label class="form-label" style="margin: 0;">OpenRouter API Key</label>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <span id="key-saved-badge" style="font-size: 0.72rem; color: var(--success); font-weight: normal; display: none;">✓ Configured</span>
+                  <button type="button" id="btn-clear-openrouter-key" class="btn btn-secondary btn-sm" style="padding: 2px 7px; font-size: 0.7rem; color: #f87171; border-color: rgba(239, 68, 68, 0.3);">
+                    🚫 Block / Remove Key
+                  </button>
+                </div>
+              </div>
+              <input type="password" id="set-openrouter-key" class="form-input" placeholder="sk-or-v1-..." autocomplete="off">
+              <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.35rem; margin-bottom: 0;">
+                Required for Kokoro 82M. Key is saved locally in data/config.json.
+              </p>
+            </div>
+
+            <!-- Gemini API Key Field (Shown when Gemini is chosen) -->
+            <div id="gemini-api-box" class="form-group" style="display: none; background: rgba(255,255,255,0.02); padding: 1rem; border-radius: var(--radius-sm); border: 1px dashed var(--border-color); margin-bottom: 1.25rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                <label class="form-label" style="margin: 0;">Google Gemini API Key</label>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <span id="gemini-key-saved-badge" style="font-size: 0.72rem; color: var(--success); font-weight: normal; display: none;">✓ Configured</span>
+                  <button type="button" id="btn-clear-gemini-key" class="btn btn-secondary btn-sm" style="padding: 2px 7px; font-size: 0.7rem; color: #f87171; border-color: rgba(239, 68, 68, 0.3);">
+                    🚫 Block / Remove Key
+                  </button>
+                </div>
+              </div>
+              <input type="password" id="set-gemini-key" class="form-input" placeholder="AIzaSy... (from Google AI Studio)" autocomplete="off">
+              <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.35rem; margin-bottom: 0;">
+                Required for Gemini 2.0 Flash Audio. Key is saved locally in data/config.json.
+              </p>
+            </div>
+
+            <!-- Status Indicator -->
+            <div id="engine-status-box" style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 1.25rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--success); font-weight: 600; font-size: 0.85rem; margin-bottom: 0.25rem;">
+                <span class="dot" style="background: var(--success);"></span> <span id="settings-status-title">Microsoft Neural Engine Active</span>
+              </div>
+              <p id="settings-status-desc" style="font-size: 0.75rem; color: var(--text-secondary); margin: 0;">
+                Latency: ~0.8s • Studio broadcast quality • 100% Free
+              </p>
+            </div>
+
+            <!-- Default Download Format -->
+            <div class="form-group">
+              <label class="form-label">Default Download Format</label>
+              <select id="set-default-format" class="form-select">
+                <option value="mp3" selected>MP3 (Universal compatibility)</option>
+                <option value="m4a">M4A (High efficiency AAC)</option>
+                <option value="wav">WAV (Lossless)</option>
+              </select>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; flex-wrap: wrap; gap: 0.75rem;">
+              <button type="button" id="btn-test-connection" class="btn btn-secondary">
+                🧪 Test Active Engine
+              </button>
+              <button type="submit" class="btn btn-primary">
+                💾 Save Settings
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Sticky Global Audio Player -->
+  <footer class="player-bar" id="app-player">
+    <div class="player-track-info">
+      <div class="player-cover">🎙️</div>
+      <div class="track-details">
+        <h4 id="player-title">Audio Title</h4>
+        <span id="player-subtitle">Neural Voice</span>
+      </div>
+    </div>
+
+    <!-- Center Playback Controls -->
+    <div class="player-controls">
+      <div class="player-buttons">
+        <button id="player-rw10" class="ctrl-btn" title="Rewind 10 seconds">⏪ 10s</button>
+        <button id="player-play-btn" class="ctrl-btn play-pause" title="Play / Pause">▶️</button>
+        <button id="player-ff10" class="ctrl-btn" title="Forward 10 seconds">⏩ 10s</button>
+        <button id="player-speed-btn" class="ctrl-btn speed-btn" title="Playback speed">1.0x</button>
+      </div>
+
+      <div class="player-scrubber-row">
+        <span id="player-current-time">0:00</span>
+        <input type="range" id="player-scrubber" class="scrubber" min="0" max="100" value="0">
+        <span id="player-duration">0:00</span>
+      </div>
+    </div>
+
+    <!-- Right Download Actions -->
+    <div class="player-downloads">
+      <a id="player-dl-mp3" href="#" download="audio.mp3" class="dl-btn">
+        <span>⬇️ MP3</span>
+      </a>
+      <a id="player-dl-m4a" href="#" download="audio.m4a" class="dl-btn">
+        <span>⬇️ M4A</span>
+      </a>
+    </div>
+
+    <!-- Hidden Native Audio Element -->
+    <audio id="global-audio-element" preload="auto"></audio>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/static/js/app.js?v=6"></script>
+  <script src="/static/js/quick_tts.js?v=6"></script>
+  <script src="/static/js/audiobook.js?v=6"></script>
+  <script src="/static/js/voice_studio.js?v=6"></script>
+</body>
+</html>
